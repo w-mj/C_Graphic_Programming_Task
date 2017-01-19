@@ -216,3 +216,34 @@ void transTree(const char *expression, tree t)
     // 当最终操作完成后，树的首地址留在栈的第一个位置
     pop(t);
 }
+
+double calculate(const tree expression, double x)
+{
+    switch (expression -> n -> operate) {
+        case Plus:
+            return calculate(expression -> left ,x) + calculate(expression -> right, x);
+        case Minus:
+            return calculate(expression -> left,x) - calculate(expression -> right,x);
+        case Multiple:
+            return calculate(expression -> left,x) * calculate(expression -> right,x);
+        case Divide:
+            return calculate(expression -> left,x) / calculate(expression -> right,x);
+        case Times:
+            return pow( calculate(expression -> left,x) , calculate(expression -> right,x));
+        case Sqrt:
+            return sqrt( calculate(expression -> left,x));
+        case Sin:
+            return sin( calculate(expression -> left,x));
+        case Cos:
+            return cos( calculate(expression -> left,x));
+        case Tan:
+            return tan( calculate(expression -> left,x));
+        case Operand:
+            return expression -> n -> operand;
+        case Variable:
+            return x;
+        default :
+            fprintf(stderr ,"Bad expression.\n");
+    }
+}
+

@@ -3,6 +3,6 @@
 #include "tree.h"
 
 void transTree(const char *expression, tree t);
-double calculate(const tree expression);
+double calculate(const tree expression, double x);
 
 #endif
