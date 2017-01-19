@@ -1,6 +1,8 @@
 #ifndef __CALCULATOR_H_
 #define __CALCULATOR_H_
+#include "tree.h"
 
-double calculate(const char *expression);
+void transTree(const char *expression, tree t);
+double calculate(const tree expression);
 
 #endif

@@ -7,9 +7,9 @@
 #include "operator.h"
 #include "queue.h"
 #include "stack.h"
+#include "tree.h"
 
-queue infixQueue;
-queue postfixQueue;
+
 
 struct treeNode {
     enum operators operate;
@@ -41,11 +41,11 @@ double myAtof(const char * str, int n)
     return ans;       
 }
 //把字符串转化为中序表达式，返回转化后的队列
-void transInfix(const char *expression)
+void transInfix(const char *expression, queue infixQueue)
 {
     int length = strlen(expression);
     double number;
-    queueNode tempNode;
+    node tempNode;
     const char * str = expression;
     for (int i = 0; i < length; i++) {
         //如果某一个元素是数字或者是负号（字符串的第一个字符是减号或者减号前面是其他符号）
@@ -84,11 +84,12 @@ void transInfix(const char *expression)
     }
 }
 // 《数据结构与算法分析》P54
-void transPostfix(void)
+void transPostfix(const queue infixQueue, queue postfixQueue)
 {
     stack s;
-    queueNode qn;
-    stackNode sn;
+    node qn;
+    node sn;
+    initStack(s);
     while (isQueueEmpty(infixQueue)) {
        getQueue(infixQueue, qn);
        if (qn -> operate == Operand )
@@ -123,4 +124,29 @@ void transPostfix(void)
         popStack(s, sn);
         addQueue(postfixQueue, sn);
     }
+    freeStack(s);
+}
+
+struct TERR treeStack[200];
+int ntreeStack = 0;
+void push(node n)
+{
+    
+}
+void transTree(const char *expression, tree t)
+{
+    queue infix, postfix;
+    stack s;
+    node n;
+    initStack(s);
+    initQueue(infix);
+    initQueue(postfix);
+    transInfix(expression, infix);
+    transPostfix(infix, postfix);
+    
+    while (!isQueueEmpty(postfix)) {
+        getQueue (postfix, n);
+        if ( n->operand == Operand ) {
+            pushStack(s, n);
+        }
 }
