@@ -80,6 +80,9 @@ void transInfix(const char *expression, queue infixQueue)
             tempNode->operate = Sqrt;
             i += 2;
         }
+        else if (str[i] == 'x') {
+            tempNode -> operate = Variable;
+        }
         addQueue(infixQueue, tempNode);
     }
 }
@@ -92,7 +95,7 @@ void transPostfix(const queue infixQueue, queue postfixQueue)
     initStack(s);
     while (isQueueEmpty(infixQueue)) {
        getQueue(infixQueue, qn);
-       if (qn -> operate == Operand )
+       if (qn -> operate == Operand || qn ->operate == Variable)
             addQueue(postfixQueue, qn);
        else {
            if (qn -> operand == RBracket )  // 右括号的优先级最高
@@ -127,17 +130,65 @@ void transPostfix(const queue infixQueue, queue postfixQueue)
     freeStack(s);
 }
 
-struct TERR treeStack[200];
+tree treeStack[200];
 int ntreeStack = 0;
-void push(node n)
+void init()
 {
-    
+    ntreeStack = 0;
 }
+void push(tree n)
+{
+    treeStack[ntreeStack] -> n -> operand = n->n ->operand;    
+    treeStack[ntreeStack] -> n -> operate = n->n ->operate;    
+    treeStack[ntreeStack] -> left = n -> left;    
+    treeStack[ntreeStack] -> right = n-> right;    
+    ntreeStack++;
+}
+void pop(tree n)
+{
+    ntreeStack--;
+    n -> n -> operand = treeStack[ntreeStack] -> n -> operand;
+    n -> n -> operate = treeStack[ntreeStack] -> n -> operate;
+    n -> left = treeStack[ntreeStack] -> left;
+    n -> right = treeStack[ntreeStack] -> right;
+}
+void del(void)
+{
+    for (int i = 0 ; i < 20; i++) {
+        free(treeStack[i]);
+    }
+}
+tree createTreeNode(node no)
+{
+    tree t = (tree) malloc(sizeof (struct TREE) );
+    t -> n = (node) malloc(sizeof (struct element));
+    t -> left  = NULL;
+    t -> right = NULL;
+    t -> n ->operand = no -> operand;
+    t -> n ->operate = no -> operate;
+    return t;
+}
+
+bool doubleOperandOperate(node n)
+{
+    enum operators o = n -> operate;
+    if ( o == Plus || o == Minus || o == Multiple || o == Divide || o == Times)
+        return true;
+    else 
+        return false;
+}
+void conjection(tree left, tree target, tree right )
+{
+    target -> left = left;
+    target -> right = right;
+}
+
 void transTree(const char *expression, tree t)
 {
     queue infix, postfix;
     stack s;
     node n;
+    tree tempTree1, tempTree2, tempTree3;
     initStack(s);
     initQueue(infix);
     initQueue(postfix);
@@ -146,7 +197,22 @@ void transTree(const char *expression, tree t)
     
     while (!isQueueEmpty(postfix)) {
         getQueue (postfix, n);
-        if ( n->operand == Operand ) {
-            pushStack(s, n);
+        if ( n->operand == Operand || n->operand == Variable ) {
+            push ( createTreeNode(n) ); //如果是操作数，建立一个树节点并入栈
+        } else {
+            if ( doubleOperandOperate( n) ) { // 如果是二元运算符，从栈里弹两个东西出来并将其连接后入栈
+                pop( tempTree1 ); 
+                pop( tempTree2 );
+                tempTree3 = createTreeNode (n);
+                conjection( tempTree2, tempTree3, tempTree1);
+                push(tempTree3);
+            } else { // 如果是一元操作符，弹一个出来链接入栈
+                pop( tempTree2 );
+                tempTree3 = createTreeNode (n);
+                conjection( tempTree2, tempTree3, NULL );
+            }
         }
+    }
+    // 当最终操作完成后，树的首地址留在栈的第一个位置
+    pop(t);
 }

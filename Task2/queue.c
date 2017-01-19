@@ -38,8 +38,14 @@ bool initQueue(queue a)
     a -> max = 200;
     a ->s = 0;
     a -> e = 0;
+    for (int i = 0; i < 200; i++) {
+        a -> q[i] = malloc(sizeof(struct element));
+    }
 }
 void freeQueue(queue a)
 {
-    free(a);
+    for (int i = 0; i < 200; i++) {
+        free(a->q[i]);
+    }
+    
 }

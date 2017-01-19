@@ -8,6 +8,9 @@ bool initStack(stack a)
 {
     a -> n = 0;
     a -> max = 200;
+    for (int i = 0; i < 200; i++) {
+        a -> e[i] = malloc(sizeof (struct element)); // 每一个node型的大小
+    }
 }
 
 bool addStack(stack s, node n)
@@ -49,5 +52,7 @@ void emptyStack(stack s)
 
 void freeStack(stack s)
 {
-    free (s -> e); 
+    for (int i = 0 ;i < 200; i++) {
+        free( s -> e[i] );
+    }
 }

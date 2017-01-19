@@ -3,7 +3,7 @@
 #define MAX_SAME_PRIORITY_OPERATOR 4 //最大同优先级运算符数目
 
 enum operators
-    {Plus, Minus, Multiple, Divide, Times, Sqrt, Sin, Cos, Tan, Operand, LBracket, RBracket};
+    {Plus, Minus, Multiple, Divide, Times, Sqrt, Sin, Cos, Tan, Operand, LBracket, RBracket , Variable};
 
 const enum operators priority[][MAX_SAME_PRIORITY_OPERATOR] = { // 各种运算符的优先级，从上到下依次降低
     { LBracket },
