@@ -7,4 +7,5 @@ enum operators
 
 //比较两个运算符的优先级，如果op1的优先级比op2高，返回1，op1低于op2返回-1，相等返回0
 int comparePriority(enum operators op1, enum operators op2 );
+
 #endif

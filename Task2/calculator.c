@@ -46,9 +46,10 @@ void transInfix(const char *expression, queue infixQueue)
     for (int i = 0; i < length; i++) {
         //如果某一个元素是数字或者是负号（字符串的第一个字符是减号或者减号前面是其他符号）
         if (isdigit( str[i] ) || (str[i] == '-' && (i == 0 || !isdigit(str[i - 1]))) ) { 
+            number = atof(&str[i]);
             int j = i;
-            while ( isdigit(str[j]) || str[j] == '.') j++;
-            number = myAtof(expression + i, j - i ); 
+            while ( isdigit(str[j]) || str[j] == '.' || str[j] == '-') j++;
+            // number = myAtof(expression + i, j - i ); 
             tempNode->operate = Operand; //把数据转化成数字型然后存入队列
             tempNode->operand = number;
             i = j - 1;
@@ -184,6 +185,12 @@ tree createTreeNode(node no)
     return t;
 }
 
+void conjection(tree left, tree target, tree right )
+{
+    target -> left = left;
+    target -> right = right;
+}
+
 bool doubleOperandOperate(node n)
 {
     enum operators o = n -> operate;
@@ -192,12 +199,6 @@ bool doubleOperandOperate(node n)
     else 
         return false;
 }
-void conjection(tree left, tree target, tree right )
-{
-    target -> left = left;
-    target -> right = right;
-}
-
 tree transTree(const char *expression)
 {
     queue infix = initQueue();
@@ -217,6 +218,7 @@ tree transTree(const char *expression)
         getQueue (postfix, n);
         if ( n->operate == Operand || n->operate == Variable ) {
             //printf("dingdingdind\n");
+            printf("Push in\n");
             push ( createTreeNode(n) ); //如果是操作数或变量，建立一个树节点并入栈
         } else {
             if ( doubleOperandOperate( n) ) { // 如果是二元运算符，从栈里弹两个东西出来并将其连接后入栈
@@ -229,6 +231,7 @@ tree transTree(const char *expression)
                 tempTree2 = pop();
                 tempTree3 = createTreeNode (n);
                 conjection( tempTree2, tempTree3, NULL );
+                push(tempTree3);
             }
         }
     }
