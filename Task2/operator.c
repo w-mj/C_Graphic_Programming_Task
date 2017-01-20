@@ -1,12 +1,12 @@
 #include "operator.h"
 #include <stdbool.h>
 const enum operators priority[][MAX_SAME_PRIORITY_OPERATOR] = { // 各种运算符的优先级，从上到下依次降低
-    { LBracket , 10000, 1000, 10000},
-    { Sqrt, Sin, Cos, Tan } ,
-    { Times, 1000, 1000, 1000},
-    { Multiple, Divide , 1000, 1000} ,
-    { Plus, Minus , 1000, 1000} ,
-    { RBracket, 1000, 1000, 1000 }
+    { LBracket , 10000, 1000, 1000, 1000},
+    { Sqrt, Sin, Cos, Tan , Log} ,
+    { Times, 1000, 1000, 1000, 1000},
+    { Multiple, Divide , 1000, 1000, 1000} ,
+    { Plus, Minus , 1000, 1000, 1000} ,
+    { RBracket, 1000, 1000, 1000 , 1000}
 };
 bool inArray(const enum operators ops[MAX_SAME_PRIORITY_OPERATOR],const enum operators op)
 {
@@ -34,3 +34,4 @@ int comparePriority(const enum operators op1,const  enum operators op2)
     }
     return 987;
 }
+

@@ -77,6 +77,10 @@ void transInfix(const char *expression, queue infixQueue)
             tempNode->operate = Sqrt;
             i += 2;
         }
+        else if (str[i] == 'l' && str[i + 1] == 'o' && str[i + 2] == 'g') {
+            tempNode->operate = Log;
+            i += 2;
+        }
         else if (str[i] == 'x') {
             tempNode -> operate = Variable;
         }
@@ -262,6 +266,8 @@ double calculate(const tree expression, double x)
             return cos( calculate(expression -> left,x));
         case Tan:
             return tan( calculate(expression -> left,x));
+        case Log:
+            return log( calculate(expression -> left, x));
         case Operand:
             return expression -> n -> operand;
         case Variable:
