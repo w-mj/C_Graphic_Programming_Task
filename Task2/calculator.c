@@ -6,16 +6,12 @@
 #include <ctype.h>
 #include "operator.h"
 #include "queue.h"
+#include "debug.h"
 #include "stack.h"
 #include "tree.h"
+#include "node.h"
 
 
-
-struct treeNode {
-    enum operators operate;
-    struct node *left;
-    struct node *right;
-};
 //把字符串转化为double型
 double myAtof(const char * str, int n)
 {
@@ -45,7 +41,7 @@ void transInfix(const char *expression, queue infixQueue)
 {
     int length = strlen(expression);
     double number;
-    node tempNode;
+    node tempNode = initNode();
     const char * str = expression;
     for (int i = 0; i < length; i++) {
         //如果某一个元素是数字或者是负号（字符串的第一个字符是减号或者减号前面是其他符号）
@@ -85,83 +81,102 @@ void transInfix(const char *expression, queue infixQueue)
         }
         addQueue(infixQueue, tempNode);
     }
+    freeNode(tempNode);
 }
 // 《数据结构与算法分析》P54
 void transPostfix(const queue infixQueue, queue postfixQueue)
 {
-    stack s;
-    node qn;
-    node sn;
-    initStack(s);
-    while (isQueueEmpty(infixQueue)) {
-       getQueue(infixQueue, qn);
-       if (qn -> operate == Operand || qn ->operate == Variable)
+    stack s = initStack();
+    node qn = initNode();
+    node sn = initNode();
+    while (!isQueueEmpty(infixQueue)) {
+        getQueue(infixQueue, qn);
+       if (qn -> operate == Operand || qn ->operate == Variable) {
+            if (qn -> operate == LBracket) printf("ding1\n");
             addQueue(postfixQueue, qn);
+        }
        else {
-           if (qn -> operand == RBracket )  // 右括号的优先级最高
+           if (qn -> operand == RBracket )  // 右括号的优先级最低
             {                               //如果发现右括号，则把直到左括号之间的全部符号都转移到队列中
                while (1) {
                     popStack(s, sn);
-                    if (sn -> operand != LBracket)
+                    if (sn -> operand != LBracket) {
+            if (sn -> operate == LBracket) printf("ding2\n");
+
                         addQueue(postfixQueue, sn);
+                    }
                     else 
                         break;
                }
             } else {  // 如果是一个普通的符号，把栈里优先级比它高或者与它相等的符号存入队列
                while ( !isStackEmpty(s) ) {
                     popStack(s, sn);
-                    int falg =  comparePriority( sn -> operate , qn -> operate);
-                    if (falg == 1 && falg == 0) {
+                    int flag =  comparePriority( sn -> operate , qn -> operate);
+                    //printf("####%d\n", flag);
+                    if (sn -> operate != LBracket && (flag == 1 || flag == 0) ) {
+                        if (sn -> operate == LBracket) printf("ding3\n");
                         addQueue(postfixQueue, sn);
                     } else {
                         pushStack(s, sn); // 优先级比这个符号低，放回栈中
                         break;
                     }
                 }
+                if (qn -> operand != RBracket ) pushStack(s , qn); // 无论如何都把这个符号放进栈里（除了右括号）
             }
-           if (qn -> operand != RBracket ) pushStack(s , qn); // 无论如何都把这个符号放进栈里（除了右括号）
        }
     }
     // 中缀表达式已经空了，把栈里所有的符号都入队
     while (!isStackEmpty(s)) {
         popStack(s, sn);
+        if (sn ->operate == LBracket || sn->operate == RBracket )
+            continue;
+        if (sn -> operate == LBracket) printf("ding4\n");
         addQueue(postfixQueue, sn);
     }
     freeStack(s);
+    freeNode(qn);
+    freeNode(sn);
 }
 
 tree treeStack[200];
 int ntreeStack = 0;
 void init()
 {
+    for (int i = 0; i < 200; i++) {
+        treeStack[i]->n = initNode();
+    }
     ntreeStack = 0;
 }
 void push(tree n)
 {
-    treeStack[ntreeStack] -> n -> operand = n->n ->operand;    
-    treeStack[ntreeStack] -> n -> operate = n->n ->operate;    
-    treeStack[ntreeStack] -> left = n -> left;    
-    treeStack[ntreeStack] -> right = n-> right;    
+    //printf("Push tree stack ... ");
+    //print(n->n);
+    //printf("\n");    
+    treeStack[ntreeStack] = n;    
     ntreeStack++;
 }
-void pop(tree n)
+tree pop(void)
 {
+    if (ntreeStack == 0) {
+        fprintf(stderr, "Tree Stack is empty\n");
+        return NULL;
+    }
+    //printf("Pop tree stack ... ");
+    //print(treeStack[ntreeStack - 1]->n);
+    //printf("\n");    
     ntreeStack--;
-    n -> n -> operand = treeStack[ntreeStack] -> n -> operand;
-    n -> n -> operate = treeStack[ntreeStack] -> n -> operate;
-    n -> left = treeStack[ntreeStack] -> left;
-    n -> right = treeStack[ntreeStack] -> right;
+    return treeStack[ntreeStack];
 }
 void del(void)
 {
     for (int i = 0 ; i < 20; i++) {
-        free(treeStack[i]);
+        freeNode(treeStack[i]->n);
     }
 }
 tree createTreeNode(node no)
 {
     tree t = (tree) malloc(sizeof (struct TREE) );
-    t -> n = (node) malloc(sizeof (struct element));
+    t -> n = initNode();
     t -> left  = NULL;
     t -> right = NULL;
     t -> n ->operand = no -> operand;
@@ -183,38 +198,44 @@ void conjection(tree left, tree target, tree right )
     target -> right = right;
 }
 
-void transTree(const char *expression, tree t)
+tree transTree(const char *expression)
 {
-    queue infix, postfix;
-    stack s;
-    node n;
+    queue infix = initQueue();
+    queue postfix = initQueue();
+    node n = initNode();
     tree tempTree1, tempTree2, tempTree3;
-    initStack(s);
-    initQueue(infix);
-    initQueue(postfix);
+    tempTree1 = initTree();
+    tempTree2 = initTree();
+    tempTree3 = initTree();
+    //printf("%p\n", infix);
     transInfix(expression, infix);
+    //showQueue(infix);
     transPostfix(infix, postfix);
+    showQueue(postfix);
     
     while (!isQueueEmpty(postfix)) {
         getQueue (postfix, n);
-        if ( n->operand == Operand || n->operand == Variable ) {
-            push ( createTreeNode(n) ); //如果是操作数，建立一个树节点并入栈
+        if ( n->operate == Operand || n->operate == Variable ) {
+            //printf("dingdingdind\n");
+            push ( createTreeNode(n) ); //如果是操作数或变量，建立一个树节点并入栈
         } else {
             if ( doubleOperandOperate( n) ) { // 如果是二元运算符，从栈里弹两个东西出来并将其连接后入栈
-                pop( tempTree1 ); 
-                pop( tempTree2 );
+                tempTree1 = pop(); 
+                tempTree2 = pop();
                 tempTree3 = createTreeNode (n);
                 conjection( tempTree2, tempTree3, tempTree1);
                 push(tempTree3);
             } else { // 如果是一元操作符，弹一个出来链接入栈
-                pop( tempTree2 );
+                tempTree2 = pop();
                 tempTree3 = createTreeNode (n);
                 conjection( tempTree2, tempTree3, NULL );
             }
         }
     }
     // 当最终操作完成后，树的首地址留在栈的第一个位置
-    pop(t);
+    tree t = pop();
+    freeNode(n);
+    return t;
 }
 
 double calculate(const tree expression, double x)

@@ -7,5 +7,8 @@ struct element {
     double operand;
 };
 typedef struct element *node;
+node initNode(void);
+void freeNode(node a);
+
 
 #endif

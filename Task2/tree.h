@@ -11,5 +11,7 @@ struct TREE {
 
 typedef struct TREE *tree;
 
+tree initTree(void);
+void freeTree(tree t);
 
 #endif

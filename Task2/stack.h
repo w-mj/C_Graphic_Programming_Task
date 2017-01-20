@@ -11,7 +11,7 @@ struct STACK {
 };
 typedef struct STACK* stack;
 
-bool initStack(stack a);
+stack initStack(void);
 bool pushStack(stack s, node n);
 bool popStack(stack s, node tar);
 bool isStackEmpty(stack s);

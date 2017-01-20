@@ -19,33 +19,37 @@ bool getQueue(queue q, node tar)
     q->s++;
     return true;
 }
-bool addQueue(queue q, node n)
+bool addQueue(queue x, node n)
 {
-    if (q -> e == q -> max) {
+    if (x -> e == x -> max) {
         fprintf(stderr, "Queue is full");
         return false;
     }
-    q->q[q->e]->operate = n->operate;    
-    q->q[q->e]->operand = n->operand;    
-    q->e++;
+    //printf("%d\n", x->e);
+    x->q[x->e]->operate = n->operate;    
+    x->q[x->e]->operand = n->operand;    
+    x->e++;
     return true;
 }
 bool isQueueEmpty(queue q) {
     return q->s == q->e;
 }
-bool initQueue(queue a)
+queue initQueue(void)
 {
+    queue a;
+    a = (queue)malloc(sizeof(struct QUE));
     a -> max = 200;
-    a ->s = 0;
+    a -> s = 0;
     a -> e = 0;
     for (int i = 0; i < 200; i++) {
-        a -> q[i] = malloc(sizeof(struct element));
+        a -> q[i] = initNode();
     }
+    return a;
 }
 void freeQueue(queue a)
 {
     for (int i = 0; i < 200; i++) {
-        free(a->q[i]);
+        freeNode(a->q[i]);
     }
-    
+    free(a);
 }

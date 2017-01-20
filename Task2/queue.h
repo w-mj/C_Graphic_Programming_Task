@@ -12,7 +12,7 @@ struct QUE {
 };
 typedef struct QUE* queue;
 
-bool initQueue(queue a);
+queue initQueue(void);
 bool addQueue(queue q, node n);
 bool getQueue(queue q, node tar);
 bool isQueueEmpty(queue q);

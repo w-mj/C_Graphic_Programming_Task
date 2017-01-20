@@ -4,16 +4,19 @@
 #include <stdbool.h>
 #include "node.h"
 
-bool initStack(stack a)
+stack initStack(void)
 {
+    stack a;
+    a = (stack)malloc(sizeof (struct STACK));
     a -> n = 0;
     a -> max = 200;
     for (int i = 0; i < 200; i++) {
-        a -> e[i] = malloc(sizeof (struct element)); // 每一个node型的大小
+        a -> e[i] = initNode();
     }
+    return a;
 }
 
-bool addStack(stack s, node n)
+bool pushStack(stack s, node n)
 {
    if ( s->n == s->max ) {
        fprintf(stderr, "Stack is full.\n");
@@ -53,6 +56,7 @@ void emptyStack(stack s)
 void freeStack(stack s)
 {
     for (int i = 0 ;i < 200; i++) {
-        free( s -> e[i] );
+        freeNode( s -> e[i] );
     }
+    free(s);
 }

@@ -2,7 +2,7 @@
 #define __CALCULATOR_H_
 #include "tree.h"
 
-void transTree(const char *expression, tree t);
+tree transTree(const char *expression);
 double calculate(const tree expression, double x);
 
 #endif
