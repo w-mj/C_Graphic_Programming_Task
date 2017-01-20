@@ -1,5 +1,5 @@
-main: calculator.o operator.o queue.o stack.o main.o node.o tree.o debug.o
-	gcc -o main.run calculator.o operator.o queue.o stack.o main.o node.o tree.o debug.o -lm -g -lSDL2 -lSDL2_ttf
+main: calculator.o operator.o queue.o stack.o main.o node.o tree.o debug.o timer.o
+	gcc -o main.run calculator.o operator.o queue.o stack.o main.o node.o tree.o debug.o timer.o -lm -g -lSDL2 
 
 tree.o:tree.c tree.h
 	gcc -c tree.c
@@ -24,6 +24,9 @@ stack.o: stack.c stack.h
 
 main.o: main.c
 	gcc -c main.c -lSDL2 -lSDL2_ttf -lm 
+
+timer.o: timer.h timer.c
+	gcc -c timer.c
 
 clean:
 	rm *.o

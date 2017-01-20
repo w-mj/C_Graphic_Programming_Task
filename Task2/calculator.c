@@ -222,7 +222,7 @@ tree transTree(const char *expression)
         getQueue (postfix, n);
         if ( n->operate == Operand || n->operate == Variable ) {
             //printf("dingdingdind\n");
-            printf("Push in\n");
+            //printf("Push in\n");
             push ( createTreeNode(n) ); //如果是操作数或变量，建立一个树节点并入栈
         } else {
             if ( doubleOperandOperate( n) ) { // 如果是二元运算符，从栈里弹两个东西出来并将其连接后入栈

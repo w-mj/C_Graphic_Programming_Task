@@ -1,16 +1,17 @@
-#include <SDL/SDL.h>
 #include "timer.h"
 #include <stdbool.h>
+#include <stdlib.h>
+#include <SDL2/SDL.h>
 
-
-int initTimer(timer t)
+timer initTimer(void)
 {
+    timer t = (timer)malloc(sizeof(struct MyTimer));
     t -> startTick = 0; 
     t -> pausedTime = 0;
     t -> pauseTick = 0;
     t -> paused = false;
     t -> running = false;
-    return 0;
+    return t;
 }
 
 int startTimer(timer t)
@@ -45,7 +46,12 @@ int remuseTimer(timer t)
 
 int haltTimer(timer t)
 {
-    return initTimer(t);
+    t -> startTick = 0; 
+    t -> pausedTime = 0;
+    t -> pauseTick = 0;
+    t -> paused = false;
+    t -> running = false;
+    return 0;
 }
 
 Uint32 getTimer(timer t)
@@ -55,4 +61,10 @@ Uint32 getTimer(timer t)
     if ( t -> paused == true) 
         remuseTimer(t);
     return SDL_GetTicks() - ( t -> startTick ) - (t -> pausedTime); 
+}
+
+int freeTimer(timer t)
+{
+    free(t);
+    return 0;
 }
