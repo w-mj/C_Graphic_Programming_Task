@@ -131,6 +131,8 @@ int main(int argc, char *argv[])
                     zoomSpeed = 1;
                 }
             }
+            else 
+                continue;
         }
 
         if (horizontalSpeed + verticalSpeed + zoomSpeed!= 0) {

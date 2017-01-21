@@ -45,7 +45,7 @@ void transInfix(const char *expression, queue infixQueue)
     const char * str = expression;
     for (int i = 0; i < length; i++) {
         //如果某一个元素是数字或者是负号（字符串的第一个字符是减号或者减号前面是其他符号）
-        if (isdigit( str[i] ) || (str[i] == '-' && (i == 0 || !isdigit(str[i - 1]))) ) { 
+        if (isdigit( str[i] ) || (str[i] == '-' && (i == 0 || (!isdigit(str[i - 1]) && str[i - 1] != 'x'))) ) { 
             number = atof(&str[i]);
             int j = i;
             while ( isdigit(str[j]) || str[j] == '.' || str[j] == '-') j++;
@@ -214,7 +214,7 @@ tree transTree(const char *expression)
     tempTree3 = initTree();
     //printf("%p\n", infix);
     transInfix(expression, infix);
-    //showQueue(infix);
+    showQueue(infix);
     transPostfix(infix, postfix);
     showQueue(postfix);
     
