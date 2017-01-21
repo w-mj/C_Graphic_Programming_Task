@@ -1,0 +1,12 @@
+NEUP Net Department C Graphic Programming Task2 函数绘制器
+
+编译：
+    执行make（需要安装SDL、SDL_ttf）
+    
+运行：
+    把函数表达式以参数的形式传递给程序，表达式中自变量只能为x
+    用^表示幂运算，三角函数，指数函数分别表示为：sin、con、tan、log，用sqr表示开平方根
+    ./main.run "函数表达式"
+    
+方向键可以移动图像，z、x键用于缩放图像，c键为回到初始位置
+    
