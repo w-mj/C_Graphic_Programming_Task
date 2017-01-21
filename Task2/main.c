@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 #include "calculator.h"
 #include "tree.h"
@@ -10,10 +11,12 @@ const int FPS = 30;
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *texture = NULL;
+TTF_Font *font = NULL;
 
 void initSDL(void)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
+    TTF_Init();
     window = SDL_CreateWindow("函数绘制器", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     if (window == NULL) {
         fprintf(stderr, "%s",SDL_GetError());
@@ -26,13 +29,36 @@ void initSDL(void)
         exit(1);
     }
     SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
+    font = TTF_OpenFont("fzssjt.ttf",25);
+    if (font == NULL) {
+        fprintf(stderr, "%s", SDL_GetError());
+        exit(1);
+    }
 }
 void destroy(void)
 {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyTexture(texture);
+    TTF_Quit();
     SDL_Quit();
+}
+void showText(const char *text, SDL_Rect *location)
+{
+    SDL_Color textColor = {0, 0, 0, 0xff};
+    SDL_Texture *textTexture = NULL;
+    SDL_Surface *textSurface = NULL; //文本
+    textSurface = TTF_RenderText_Solid(font, text, textColor);
+    textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);//渲染字体
+    SDL_RenderSetViewport( renderer, location );//调整viewport
+    SDL_RenderCopy(renderer, textTexture, NULL, NULL);
+    SDL_RenderSetViewport( renderer, NULL );
+    SDL_DestroyTexture(textTexture);
+    SDL_FreeSurface(textSurface);
+}
+int abs(int x)
+{
+    return x>0?x:-x;
 }
 int main(int argc, char *argv[]) 
 {
@@ -49,6 +75,9 @@ int main(int argc, char *argv[])
     SDL_RenderClear(renderer);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xff);
     SDL_Rect blank = {0, 0, 800, 600};
+    SDL_Rect textLoca = {0, 0, 16, 20}; // 12号字，每个字16像素
+    SDL_Rect debug = {0, 0, 32, 20};
+    char text[100];
     // 显示窗口（x1，y1）与实际坐标（x0，y0）之间的相对位置
     // x1 = x0 + X 
     // y1 = -y0 + Y
@@ -71,11 +100,34 @@ int main(int argc, char *argv[])
             SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff); // 清屏
             SDL_RenderFillRect(renderer, &blank);
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xff);
+            int offsetx = X - 400;
+            int offsety = Y - 300;
+            sprintf(text, "%3d", X);
+            showText(text, &debug);
             //画坐标轴
-            if (Y >= 0 && Y <= 600) 
+            if (Y >= 0 && Y <= 600){
                 SDL_RenderDrawLine(renderer, 0, Y, 800, Y);
-            if (Y >= 0 && X <= 800)
+                textLoca.y = Y + 2;
+                for (int i = 0;  i <= 800; i+= 80) {
+                    sprintf(text, "%10g", (i - 400 -  offsetx  + offsetx % 80) / k); 
+                    if (strlen(text) >= 8) { text[8] = 0; }
+                    textLoca.x =  i+ (offsetx % 80);
+                    textLoca.w = 8 * strlen(text);
+                    showText(text, &textLoca);
+                }
+            }
+            if (Y >= 0 && X <= 800){
                 SDL_RenderDrawLine(renderer, X, 0, X, 600);
+                textLoca.x = X + 2;
+                for (int i = 0;  i <= 600; i+= 60) {
+                    if ( i -300 - offsety + offsety % 60 == 0) continue;
+                    sprintf(text, "%10g", -(i - 300 -  offsety  + offsety % 60) / k); 
+                    if (strlen(text) >= 10) { text[10] = 0; }
+                    textLoca.y =  i+ (offsety % 60);
+                    textLoca.w = 8 * strlen(text);
+                    showText(text, &textLoca);
+                }
+            }
             first = true;
             for (x1 = 0; x1 <= 800; x1++) {
                 ty = calculate(t, (x1  - X) / k); // 计算出y的值
@@ -111,9 +163,9 @@ int main(int argc, char *argv[])
                     k = 1;
                     action = true;
                 } else if(event.key.keysym.sym == SDLK_z) {
-                    zoomSpeed = 2;
+                    zoomSpeed = 1.3;
                 } else if(event.key.keysym.sym == SDLK_x) {
-                    zoomSpeed = 0.5;
+                    zoomSpeed = 0.7;
                 }
             }
             else if (event.type == SDL_KEYUP) {

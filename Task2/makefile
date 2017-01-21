@@ -1,5 +1,5 @@
 main: calculator.o operator.o queue.o stack.o main.o node.o tree.o debug.o timer.o
-	gcc -o main.run calculator.o operator.o queue.o stack.o main.o node.o tree.o debug.o timer.o -lm -g -lSDL2 
+	gcc -o main.run calculator.o operator.o queue.o stack.o main.o node.o tree.o debug.o timer.o -lm -g -lSDL2 -lSDL2_ttf
 
 tree.o:tree.c tree.h
 	gcc -c tree.c
