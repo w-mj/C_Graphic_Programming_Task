@@ -87,7 +87,10 @@ int main(int argc, char *argv[])
     double ty;
     int lastx, lasty;
     int usedTime;
-    bool first = true, action = true;
+    bool first = true, action = true, autoZoom = true;
+    //int drawY[800]; // 记录下每次画线y的坐标，用于计算平均值和自动缩放
+    int draws = 0;
+    double average;
     t = transTree(argv[1]);
     bool quit = false;
     int verticalSpeed = 0, horizontalSpeed = 0;
@@ -102,26 +105,26 @@ int main(int argc, char *argv[])
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0xff);
             int offsetx = X - 400;
             int offsety = Y - 300;
-            sprintf(text, "%3d", X);
-            showText(text, &debug);
+            //sprintf(text, "%3d", X);
+            //showText(text, &debug);
             //画坐标轴
             if (Y >= 0 && Y <= 600){
                 SDL_RenderDrawLine(renderer, 0, Y, 800, Y);
                 textLoca.y = Y + 2;
                 for (int i = 0;  i <= 800; i+= 80) {
-                    sprintf(text, "%10g", (i - 400 -  offsetx  + offsetx % 80) / k); 
-                    if (strlen(text) >= 8) { text[8] = 0; }
+                    sprintf(text, "%g", (i - 400 -  offsetx  + offsetx % 80) / k); 
+                    if (strlen(text) >= 10) { text[10] = 0; }
                     textLoca.x =  i+ (offsetx % 80);
                     textLoca.w = 8 * strlen(text);
                     showText(text, &textLoca);
                 }
             }
-            if (Y >= 0 && X <= 800){
+            if (X >= 0 && X <= 800){
                 SDL_RenderDrawLine(renderer, X, 0, X, 600);
                 textLoca.x = X + 2;
                 for (int i = 0;  i <= 600; i+= 60) {
                     if ( i -300 - offsety + offsety % 60 == 0) continue;
-                    sprintf(text, "%10g", -(i - 300 -  offsety  + offsety % 60) / k); 
+                    sprintf(text, "%g", -(i - 300 -  offsety  + offsety % 60) / k); 
                     if (strlen(text) >= 10) { text[10] = 0; }
                     textLoca.y =  i+ (offsety % 60);
                     textLoca.w = 8 * strlen(text);
@@ -129,8 +132,14 @@ int main(int argc, char *argv[])
                 }
             }
             first = true;
+            draws = 0;
+            average = 0;
             for (x1 = 0; x1 <= 800; x1++) {
                 ty = calculate(t, (x1  - X) / k); // 计算出y的值
+                if (isnan(ty)) {
+                    continue;
+                    first = true;
+                }
                 y1 = Y - (int)(ty * k + 0.5);
                 //y1 = (Y - (x1 - X)); 
                 if (first) first = false;
@@ -139,9 +148,23 @@ int main(int argc, char *argv[])
                     if (y1 > 600 ) y1 = 600;
                     if (y1 < 0 ) y1 = 0;
                     SDL_RenderDrawLine(renderer, lastx, lasty, x1, y1);
+                    average += lasty - 300;
+                    draws++;
                 }
                 lastx = x1;
                 lasty = y1;
+            }
+            if (autoZoom) {
+                average = abs(average / draws);
+                //fprintf(stderr, "%f", average);
+                if (average < 1)
+                    average = 1;
+                if (average > 290)
+                    average = 290;
+                if (average < 50 || average > 250)
+                    k = 150 / average;
+                autoZoom = false;
+                action = true;
             }
         }
 
@@ -162,6 +185,7 @@ int main(int argc, char *argv[])
                     Y = 300;
                     k = 1;
                     action = true;
+                    autoZoom = true;
                 } else if(event.key.keysym.sym == SDLK_z) {
                     zoomSpeed = 1.3;
                 } else if(event.key.keysym.sym == SDLK_x) {

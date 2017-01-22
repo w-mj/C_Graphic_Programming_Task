@@ -247,27 +247,43 @@ tree transTree(const char *expression)
 
 double calculate(const tree expression, double x)
 {
+    double op1, op2;
+    if (expression == NULL)
+        return 1.0;
+    op2 = calculate(expression -> right,  x);
+    op1 = calculate(expression -> left, x);
+    if (isnan(op1) || isnan(op2))
+        return nan("");
     switch (expression -> n -> operate) {
         case Plus:
-            return calculate(expression -> left ,x) + calculate(expression -> right, x);
+            return op1 + op2;
         case Minus:
-            return calculate(expression -> left,x) - calculate(expression -> right,x);
+            return op1 - op2;
         case Multiple:
-            return calculate(expression -> left,x) * calculate(expression -> right,x);
+            return op1 * op2;
         case Divide:
-            return calculate(expression -> left,x) / calculate(expression -> right,x);
+            if (op2 == 0)
+                return nan("");
+            else 
+                return op1 / op2;
         case Times:
-            return pow( calculate(expression -> left,x) , calculate(expression -> right,x));
+            return pow( op1 , op2);
         case Sqrt:
-            return sqrt( calculate(expression -> left,x));
+            if (op1 < 0)
+                return nan("");
+            else 
+                return sqrt( op1);
         case Sin:
-            return sin( calculate(expression -> left,x));
+            return sin( op1);
         case Cos:
-            return cos( calculate(expression -> left,x));
+            return cos( op1);
         case Tan:
-            return tan( calculate(expression -> left,x));
+            return tan( op1);
         case Log:
-            return log( calculate(expression -> left, x));
+            if (op1 < 0)
+                return nan("");
+            else 
+                return log(op1);
         case Operand:
             return expression -> n -> operand;
         case Variable:
