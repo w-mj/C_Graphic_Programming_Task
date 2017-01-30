@@ -107,3 +107,11 @@ void freeFrame(frameList frame)
         free(delf);
     }
 }
+
+void display(SDL_Renderer *renderer, picList pics)
+{
+    while (pics != NULL) {
+        SDL_RenderCopy(renderer, pics -> pic -> imgSource, &pics -> pic -> imageLocation, &pics -> pic -> displayLocation);
+        pics = pics -> nextPic;
+    }
+}
