@@ -16,102 +16,49 @@ void copyPic(pictureNode target, const pictureNode source)
     target -> displayLocation.w = source -> displayLocation.w;
 }
 
-frameList initFrameList(int n)
+frameList initFrameList(void)
 {
     frameList start = (frameList)malloc(sizeof(struct FRAME_LIST));
     start -> picture = NULL;
     start -> nextFrame = NULL;
-    frameList now = start;
-    for (int i= 1; i < n; i++ ) {
-        now -> nextFrame = (frameList)malloc(sizeof(struct FRAME_LIST));
-        now = now -> nextFrame;
-        now -> picture = NULL;
-    }
-    now -> nextFrame = NULL;
     return start;
 }
 // 可以用于改变一个图像，或者向帧链表里新增图像
-void changePic(frameList frame, pictureNode pic, int s, int n)
+void addSprite(frameList frame, pictureNode pic, int delay)
 {
-    for (int i = 0; i < s; i++) { frame = frame -> nextFrame; }
-    
-    picList pics;
-    bool copied;
-    while (frame != NULL && s != n) {
-        pics = frame -> picture;
-        while (1) {
-            copied = false;
-            //如果某一个图像的名字与目标相等，则复制，并break
-            if (strcmp(pics -> pic -> pictureName, pic -> pictureName) == 0) {
-                copyPic(pics -> pic, pic); 
-                copied = true;
-                break;
-            } else { 
-                // 如果还有下一个，走到下一个，否则直接退出
-                if (pics -> nextPic != NULL)
-                    pics = pics -> nextPic;
-                else {
-                    copied = false;
-                    break;
-                }
-            }
-        }
-        // 没有复制，新建节点后复制
-        if ( !copied ) {
-            pics -> nextPic = (picList)malloc(sizeof(struct PIC_LIST));
-            pics = pics -> nextPic;
-            copyPic(pics -> pic, pic);
-        }
+    if (frame -> picture!= NULL) {
+        while(frame -> nextFrame != NULL)
+            frame = frame -> nextFrame;
+        frame -> nextFrame = (frameList)malloc(sizeof(struct FRAME_LIST));
         frame = frame -> nextFrame;
-        s++;
-    } 
+    }
+    frame -> delay = delay;
+    frame -> picture = (pictureNode)malloc(sizeof(struct PIC));
+    copyPic(frame -> picture, pic);
+    frame -> nextFrame = NULL;
 }
 
-void removePic(frameList frame, const char * name)
-{
-    picList pics, last, del;
-    while (frame != NULL) {
-        pics = frame -> picture;
-        last = NULL;
-        while ( pics != NULL) {
-            if (strcmp( name, pics -> pic -> pictureName) == 0) {
-                if (last == NULL) {
-                    del = pics;
-                    frame -> picture = del -> nextPic;
-                    free(del);
-                } else {
-                    last -> nextPic = del -> nextPic;
-                    free(del);
-                }
-            } else {
-                last = pics;
-                pics = pics -> nextPic;
-            }
-        }
-    }
-}
 
 void freeFrame(frameList frame)
 {
-    picList pics, del;
-    frameList delf;
+    frameList del;
+    del = frame;
+    frame = frame -> nextFrame;
     while (frame != NULL) {
-        pics = frame -> picture;
-        while (pics != NULL) {
-            del = pics;
-            pics = del -> nextPic;
-            free(del);
+        if (frame == del) { // 如果是循环链表，则把循环链表变成普通链表
+            frame = frame -> nextFrame;
+            del -> nextFrame = NULL;
+            break;
         }
-        delf = frame;
-        frame = delf -> nextFrame;
-        free(delf);
+        frame = frame -> nextFrame;
     }
-}
+    if (frame == NULL) // 不是循环链表，最终fream必等于NULL，给它复原成第一个元素地址
+        frame = del;
 
-void display(SDL_Renderer *renderer, picList pics)
-{
-    while (pics != NULL) {
-        SDL_RenderCopy(renderer, pics -> pic -> imgSource, &pics -> pic -> imageLocation, &pics -> pic -> displayLocation);
-        pics = pics -> nextPic;
+    while (frame != NULL) {
+        del = frame;
+        frame = frame -> nextFrame;
+        free(del -> picture);
+        free(del);
     }
 }
