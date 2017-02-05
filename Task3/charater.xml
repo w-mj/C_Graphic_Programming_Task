@@ -1,23 +1,15 @@
 <!-- charater action -->
 <AnimatedActor>
     <SpriteSheet Path="charater.bmp"/>
-    <Nulls>
-        <Null Name="stay" Id="0" />
-        <Null Name="moveRight" Id="1" />
-    </Nulls>
-    <Events/>
-    <Content>
-        <Animations DefaultAnimation="stay">
-            <Animation Name="stay" FrameNum="1" Loop="True">
-                <Frame XPosition="0" YPosition="0" XCrop="0" YCrop="61" Width="40" Height="61" Delay="1" />
-            </Animation>
-            <Animation Name="moveRight" FrameNum="8" Loop="False">
-                <Frame XPosition="0" YPosition="0" XCrop="0" YCrop="61" Width="40" Height="61" Delay="2" />
-                <Frame XPosition="0" YPosition="0" XCrop="40" YCrop="61" Width="40" Height="61" Delay="2" />
-                <Frame XPosition="0" YPosition="0" XCrop="80" YCrop="61" Width="40" Height="61" Delay="2" />
-                <Frame XPosition="0" YPosition="0" XCrop="120" YCrop="61" Width="40" Height="61" Delay="2" />
-
-            </Animation>
-        </Animations>
-    </Content>
+    <Animations DefaultAnimation="stay">
+        <Animation Name="stay" FrameNum="1" Loop="True">
+            <Frame XPosition="0" YPosition="0" XCrop="0" YCrop="61" Width="40" Height="61" Delay="1" />
+        </Animation>
+        <Animation Name="moveRight" FrameNum="8" Loop="False">
+            <Frame XPosition="0" YPosition="0" XCrop="0" YCrop="61" Width="40" Height="61" Delay="2" />
+            <Frame XPosition="0" YPosition="0" XCrop="40" YCrop="61" Width="40" Height="61" Delay="2" />
+            <Frame XPosition="0" YPosition="0" XCrop="80" YCrop="61" Width="40" Height="61" Delay="2" />
+            <Frame XPosition="0" YPosition="0" XCrop="120" YCrop="61" Width="40" Height="61" Delay="2" />
+        </Animation>
+    </Animations>
 </AnimatedActor>
