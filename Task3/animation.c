@@ -1,9 +1,8 @@
 #include <stdlib.h>
 #include "animation.h"
 #include "xml.h"
-#include "sdl.h"
+#include "common.h"
 #include <stdbool.h>
-
 void copyPic(pictureNode target, const pictureNode source)
 {
     target -> imgSource = source -> imgSource;
@@ -20,6 +19,7 @@ void copyPic(pictureNode target, const pictureNode source)
 frameList initFrameList(void)
 {
     frameList start = (frameList)malloc(sizeof(struct FRAME_LIST));
+    memset(start, 0, sizeof(struct FRAME_LIST));
     start -> picture = (pictureNode)malloc(sizeof(struct PIC));
     start -> nextFrame = NULL;
     start -> lastFrame = NULL;
@@ -50,6 +50,8 @@ void freeFrame(frameList frame)
 animationList createAnimationList(xmlTree xml, SDL_Renderer *renderer)
 {
     animationList ret = (animationList)malloc(sizeof(struct ANIMATION_LIST));
+    if (ret == NULL)
+        exit(10);
     for (int i = 0; i < 15; i++) {
         ret -> frames[i] = NULL;
     }
@@ -59,30 +61,30 @@ animationList createAnimationList(xmlTree xml, SDL_Renderer *renderer)
     frameList start, end;
 
     char * filename = getValue(xml, "AnimatedActor/SpriteSheet/Path");
-    char * temp;
-    ret -> img = loadImg(filename, renderer);
+    char * temp , *defaultName;
+    ret -> img = loadImg0(filename, renderer);
+    if (ret -> img == NULL) {
+        fprintf(stderr, "%s\n" ,SDL_GetError());
+        exit(23);
+    }
+    fprintf(stderr, "%p\n", ret -> img);
 
     xml  = getSubTree(xml, "AnimatedActor/Animations");
+    defaultName = getValue(xml, "DefaultAnimation");
     for (int i = 0; i < xml -> subLableNumber; i++) {
         animation = xml -> subLable[i];
         temp = getValue(animation , "Name");
+        if (strcmp(temp, defaultName) == 0)
+            ret -> defaultAnimation = i;
+
         strcpy(ret -> name[i], temp);  // 复制动画名
         start = ret -> frames[i];
         end = ret -> frames[i];
         for (int j = 0; j < animation -> subLableNumber; j++) {
             frame = animation -> subLable[j];
-            temp = getValue(frame, "XPosition");
-            pic -> displayLocation.x = atoi(temp);
-            temp = getValue(frame, "YPosition");
-            pic -> displayLocation.y = atoi(temp);
-            temp = getValue(frame, "XCrop");
-            pic -> imageLocation.x = atoi(temp);
-            temp = getValue(frame, "YCrop");
-            pic -> imageLocation.y = atoi(temp);
-            temp = getValue(frame, "Width");
-            pic -> imageLocation.w = pic -> displayLocation.w = atoi(temp);
-            temp = getValue(frame, "Height");
-            pic -> imageLocation.h = pic -> displayLocation.h = atoi(temp);
+            setPic(pic, frame);
+            pic -> imgSource = ret -> img;
+
             frameList fl = initFrameList();
             copyPic(fl -> picture, pic);
             temp = getValue(frame, "Delay");
@@ -107,11 +109,23 @@ animationList createAnimationList(xmlTree xml, SDL_Renderer *renderer)
             end -> nextFrame = NULL;
         }
         ret -> frames[i] = start;
+        ret -> aniNumber += 1;
     }
+    fprintf(stderr, "ret0 = %p\n", ret -> frames[0]);
+    fprintf(stderr, "ret1 = %p\n", ret -> frames[1]);
     return ret;
 }
 
-void addAnimation(frameList frame, xmlTree xml, const char *name)
+frameList addAnimation(animationList aniList, const char *name)
 {
+    if(strcmp(name , "default") == 0)
+        return aniList -> frames[aniList -> defaultAnimation] ;
+    else 
+        for (int i = 0; i < aniList -> aniNumber; i++) {
+            if (strcmp(name, aniList -> name[i]) == 0) {
+                return aniList -> frames[i];
+            }
+        }
+    return NULL;
 
 }

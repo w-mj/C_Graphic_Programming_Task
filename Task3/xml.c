@@ -200,7 +200,7 @@ char * getValue(xmlTree tree, char *path0)
             break;
         }
     }
-    printf("%s\n%s\n", path,name);
+    //printf("%s\n%s\n", path,name);
     if (name[0] == '\0') {
         // 没有子树，path全部都是属性名
         strcpy(name, path);

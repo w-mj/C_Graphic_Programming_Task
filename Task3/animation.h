@@ -25,6 +25,7 @@ struct ANIMATION_LIST {
     SDL_Texture * img;
     char name[15][128];
     int defaultAnimation;
+    int aniNumber;
     frameList frames[15];
 };
 typedef struct ANIMATION_LIST *animationList;
@@ -37,6 +38,6 @@ frameList initFrameList(void);
 animationList createAnimationList(xmlTree xml, SDL_Renderer *renderer);
 void addSprite(frameList frame, pictureNode pic, int delay);
 void freeFrame(frameList frame);
-void addAnimation(frameList frame, xmlTree xml, const char * name);
+frameList addAnimation(animationList aniList, const char * name);
 
 #endif

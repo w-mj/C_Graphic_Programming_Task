@@ -3,14 +3,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-void initSDL(SDL_Window *window, SDL_Renderer *renderer)
+void initSDL(SDL_Window **window, SDL_Renderer **renderer)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
-    window = SDL_CreateWindow("The Binding of Isak", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    *window = SDL_CreateWindow("Shoot!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     if (window == NULL) {
         fprintf(stderr, "%s", SDL_GetError());
+        exit(-1);
     }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) {
         fprintf(stderr, "%s", SDL_GetError());
         exit(-1);

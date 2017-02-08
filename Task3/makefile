@@ -1,11 +1,23 @@
-main: main.o 
-	gcc -o main.run main.c -g -lSDL2 -lSDL2_image -lm
+main.run: main.o xml.o animation.o weapon.o common.o
+	gcc -g -o main.run main.o xml.o animation.o weapon.o common.o -lSDL2 -lSDL2_image -lm
 
 testxml.o: testxml.c
-	gcc -c testxml.c
+	gcc -g -c testxml.c
 
 xml.o: xml.c xml.h
-	gcc -c xml.c
+	gcc -g -c xml.c 
+
+animation.o: animation.c animation.h
+	gcc -g -c animation.c
 
 main.o: main.c
-	gcc -c main.c
+	gcc -g -c main.c
+
+weapon.o: weapon.c weapon.h
+	gcc -g -c weapon.c
+	
+common.o: common.c common.h
+	gcc -g -c common.c
+
+clean:
+	rm -f *.o

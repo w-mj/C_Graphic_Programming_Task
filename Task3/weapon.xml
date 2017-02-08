@@ -1,0 +1,8 @@
+<Weapons>
+    <SpriteSheet Path="weapon.bmp" />
+    <Weapon name="gun" attackType="1" power="1" speed="10">
+        <WeaponBody XPosition="12" YPosition="-5" XCrop="63" YCrop="10" Width="57" Height="41" />
+        <BulletBody XPosition="0" YPosition="0" XCrop="0" YCrop="0" Width="48" Height="21" />
+    </Weapon>
+</Weapons>
+
