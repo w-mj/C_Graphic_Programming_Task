@@ -1,0 +1,12 @@
+<!-- moveMethod 1为直线移动 -->
+<!-- attackMethod 1为向玩家身上撞-->
+<!-- attackFrequency是每几毫秒攻击一次-->
+<AnimatedActor name="bird" speed="4" moveMethod="1" attackMethod="1" attackFrequency="0" health="1">
+    <SpriteSheet Path="birds.bmp"/>
+    <Animations DefaultAnimation="fly">
+        <Animation Name="fly" FrameNum="4" Loop="True">
+            <Frame XPosition="0" YPosition="0" XCrop="0" YCrop="0" Width="117" Height="82" Delay="2" />
+            <Frame XPosition="0" YPosition="0" XCrop="124" YCrop="0" Width="117" Height="82" Delay="2" />
+        </Animation>
+    </Animations>
+</AnimatedActor>

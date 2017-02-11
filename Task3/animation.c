@@ -129,3 +129,14 @@ frameList addAnimation(animationList aniList, const char *name)
     return NULL;
 
 }
+
+void destroyAnimationList(animationList ani)
+{
+    for (int i = 0; i < 15; i++) {
+        if (ani -> frames[i] == NULL) 
+            break;
+        freeFrame(ani -> frames[i]);
+    }
+    SDL_DestroyTexture(ani -> img);
+    free(ani);
+}

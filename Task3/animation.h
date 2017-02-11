@@ -36,6 +36,7 @@ typedef struct ANIMATION_LIST *animationList;
 // 如果frameList是循环链表，则循环播放动画
 frameList initFrameList(void);
 animationList createAnimationList(xmlTree xml, SDL_Renderer *renderer);
+void destroyAnimationList(animationList ani);
 void addSprite(frameList frame, pictureNode pic, int delay);
 void freeFrame(frameList frame);
 frameList addAnimation(animationList aniList, const char * name);

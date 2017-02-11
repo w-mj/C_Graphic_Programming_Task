@@ -1,5 +1,5 @@
-main.run: main.o xml.o animation.o weapon.o common.o
-	gcc -g -o main.run main.o xml.o animation.o weapon.o common.o -lSDL2 -lSDL2_image -lm
+main.run: main.o xml.o animation.o weapon.o common.o monster.o
+	gcc -g -o main.run main.o xml.o animation.o weapon.o common.o monster.o -lSDL2 -lSDL2_image -lm
 
 testxml.o: testxml.c
 	gcc -g -c testxml.c
@@ -18,6 +18,9 @@ weapon.o: weapon.c weapon.h
 	
 common.o: common.c common.h
 	gcc -g -c common.c
+
+monster.o: monster.c monster.h
+	gcc -g -c monster.c
 
 clean:
 	rm -f *.o

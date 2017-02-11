@@ -115,6 +115,10 @@ xmlTree loadXML(const char *fname)
 {
     FILE *fp = NULL;
     fp = fopen(fname, "rb");
+    if (fp == NULL) {
+        fprintf(stderr, "fail to open file: %s\n", fname);
+        exit(4);
+    }
     fseek(fp, 0, SEEK_END);
     int fsize = ftell(fp);
     rewind(fp);
