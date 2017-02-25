@@ -6,6 +6,7 @@
 #include <time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include "animation.h"
 #include "sdl.h"
 #include "xml.h"
@@ -15,6 +16,9 @@
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
+TTF_Font *font = NULL;
+SDL_Color color = {0, 0, 0, 0xff};
+unsigned int score;
 
 
 struct {
@@ -95,6 +99,7 @@ void crashCheck(void)
             bulletzone.h = bullet[j].h;
             bulletzone.w = bullet[j].w;
             if (isSuperpose(&bulletzone, &monster)) {
+                score += 5;
                 monsters[i].health -= bullet[j].statu -> power;
                 bullet[j].exist = false;
                 if (monsters[i].health <= 0)
@@ -122,7 +127,7 @@ void createBullet(int x, int y, int targetX,int  targetY, weaponList w)
                 bullet[i].angle = 90;
             else 
                 bullet[i].angle = atan2(((double)targetY - y) , ((double)targetX - x)) * 180 / PI; // 反正切求角度并转化成角度制
-            fprintf(stderr, "%d %d %d %d %f\n", x, y, targetX, targetY, bullet[i].angle);
+            //fprintf(stderr, "%d %d %d %d %f\n", x, y, targetX, targetY, bullet[i].angle);
             bullet[i].statu = w; // 主要是记录这个子弹的图像
             bullet[i].exist = true;
             return ;
@@ -183,7 +188,7 @@ frameList createMonster(const char *name, monsterList m, int i)
 {
     while (m != NULL) {
         if (strcmp(name, m->name) == 0) {
-            fprintf(stderr, "dig\n");
+            // fprintf(stderr, "dig\n");
             monsters[i].exist = true;
             monsters[i].speed = m -> speed;
             monsters[i].moveMethod = m -> moveMethod;
@@ -209,8 +214,8 @@ void moveMonsters(void)
             if (monsters[i].moveMethod == 1) {
                 monsters[i].x -= monsters[i].speed * cos(monsters[i].angle);
                 monsters[i].y -= monsters[i].speed * sin(monsters[i].angle);
-                if (i == 0)
-                printf("%lf  %d  %d  \n", monsters[i].angle, monsters[i].x, monsters[i].y);
+                //  if (i == 0)
+                // printf("%lf  %d  %d  \n", monsters[i].angle, monsters[i].x, monsters[i].y);
             }
         }
     }
@@ -219,24 +224,50 @@ void initGame(void)
 {
     playerStatus.x = 0;
     playerStatus.y = 322;
+    score = 0;
     strcpy(playerStatus.weapon, "gun");
-    playerStatus.helth = 10;
+    playerStatus.helth = 1;
     playerStatus.speed= 5;
     for (int i = 0; i < 20; i++) {
         bullet[i].exist = false;
     }
+    for (int i = 0; i < 15; i++) {
+        monsters[i].exist = false;
+    }
     srand(time(NULL));
+}
+
+void showScore(void)
+{
+    SDL_Rect zone = {0, 0, 34, 34};
+    char text[20];
+    sprintf(text, "%u", score);
+    // fprintf(stderr, "%s\n", text);
+    SDL_Surface *message = TTF_RenderText_Solid(font, text, color);
+    SDL_Texture *msg = SDL_CreateTextureFromSurface(renderer, message);
+    zone.w = zone.h * strlen(text) / 2;
+    SDL_RenderCopy(renderer, msg, NULL, &zone);
+    SDL_FreeSurface(message);
+    SDL_DestroyTexture(msg);
 }
 
 int main(int argc, char *argv[])
 {
     initSDL(&window, &renderer);
+    TTF_Init();
     initGame();
     SDL_Event event;
     SDL_Texture *bg = loadImg("bg.bmp", renderer);
+    SDL_Texture *youDead = loadImg("dead.bmp", renderer);
+
     if (bg == NULL) {
         fprintf(stderr, "%s\n", SDL_GetError());
         exit(2);
+    }
+    font = TTF_OpenFont("fzssjt.ttf", 26);
+    if (font == NULL) {
+        fprintf(stderr, "%s", SDL_GetError());
+        exit(3);
     }
     xmlTree character = loadXML("player.xml");
     xmlTree weaponXML = loadXML("weapon.xml");
@@ -256,6 +287,7 @@ int main(int argc, char *argv[])
     SDL_Rect display;
 
     bool quit = false;
+    bool restart = false;
     
     frames[1] = addAnimation(player, "stay");
     playerStatus.h = frames[1] -> picture -> imageLocation .h;
@@ -265,7 +297,7 @@ int main(int argc, char *argv[])
             if (event.type == SDL_QUIT)
                 quit = true;
             else if (event.type == SDL_KEYDOWN) {
-                fprintf(stderr, "keydown\n");
+                //fprintf(stderr, "keydown\n");
                 switch(event.key.keysym.sym) {
                     case SDLK_d:
                         if (moveSpeed > 0)
@@ -283,7 +315,7 @@ int main(int argc, char *argv[])
             }
             else if (event.type == SDL_KEYUP) {
 
-                fprintf(stderr, "keyup\n");
+                //fprintf(stderr, "keyup\n");
                 switch(event.key.keysym.sym) {
                     case SDLK_d:
                         moveSpeed = 0;
@@ -347,13 +379,26 @@ int main(int argc, char *argv[])
                 }
             }
         }
+        showScore();
         drawBullet();
         moveMonsters();
         crashCheck();
         if (playerStatus.helth <= 0) {
-            fprintf(stderr, "you dead\n");
-            quit = true;
+            // fprintf(stderr, "you dead\n");
+            SDL_RenderCopy(renderer, youDead, NULL, NULL);
+            SDL_RenderPresent(renderer);
+            while(!(quit || restart)) {
+                while (SDL_PollEvent(&event)) {
+                    if (event.type == SDL_QUIT)
+                        quit = true;
+                    else if (event.type == SDL_KEYDOWN) {
+                        initGame();
+                        restart = true;
+                    }
+                }
+            }
         }
+        restart = false;
         times = SDL_GetTicks();
         if (times - lastPresentTime < ( 1000 / 30))
             SDL_Delay(1000 / 30 - (times - lastPresentTime));
@@ -365,6 +410,8 @@ int main(int argc, char *argv[])
     destroyXMLTree(weaponXML);
     destroyXMLTree(monsterXML);
     destroyWeaponList(weapons);
+    TTF_CloseFont(font);
+    TTF_Quit();
     SDL_DestroyTexture(bg);
     destroySDL(window, renderer);
     return 0;
