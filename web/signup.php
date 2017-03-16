@@ -6,7 +6,7 @@ require_once "clearInput.php";
 echo <<< _HTML
 <style>@import url('signup.css'); </style>
 <style>@import url('cs.css'); </style>
-<html><head><title>注册</title></head>
+<html><meta charset="UTF-8" /><head><title>注册</title></head>
 <body>
 <div id='area'>
 <h1>注册一个新用户</h1>

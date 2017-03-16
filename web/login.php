@@ -3,8 +3,8 @@ require_once 'clearInput.php';
 session_start();
 
 echo <<< _HTML
-<html><head><title>登录</title></head>
-<body">
+<html><meta charset="UTF-8" /><head><title>登录</title></head>
+<body>
 <style>@import url('login.css');</style>
 <style>@import url('cs.css');</style>
 <div class='signIn'>
