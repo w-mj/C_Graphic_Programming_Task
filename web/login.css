@@ -1,0 +1,62 @@
+.signIn {
+    text-align: center;
+    position: relative;
+    top: 200px;
+    font-size:200%;
+    /*border: 8px solid #8eff3b;*/
+}
+
+body {
+    background-image: url('sinIn_bg.png');
+}
+
+h1 {
+    position: relative;
+    left: 50px;
+    color: #ffffff
+}
+
+form {
+    color: #ffffff;
+    font-weight: bolder;
+}
+
+input {
+    background-color: rgba(113, 167, 255, 0.19);
+}
+
+#login_submit {
+    position: relative;
+    width: 200px;
+    top: 30px;
+    height: 50px;
+    right: -50px;
+    border-style: hidden;
+    background: rgba(173,164,255,0.47);
+}
+
+#signUp_submit {
+    position: relative;
+    border-style: hidden;
+    top: 30px;
+    width: 200px;
+    height: 50px;
+    right: -50px;
+    background: rgba(173,164,255,0.47);
+}
+
+#psdLine {
+    position: relative;
+    left: 12px;
+    top: 20px;
+}
+
+.inputLine {
+    border: 5px solid;
+    font-size: 180%;
+}
+
+.text {
+    position: relative;
+    left: 40px;
+}
