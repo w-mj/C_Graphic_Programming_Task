@@ -24,7 +24,7 @@ if (isset($_SESSION['username']) && isset($_SESSION['userid']) && $_SESSION['use
     echo "<script>window.location.href='index.php'</script>";
 // 找到了cookie
 elseif (isset($_COOKIE['saveuser']) && $_COOKIE['saveuser'] != '') {
-    ($db = New mysqli('localhost', 'root', 'root', 'msgBoard')) or die('数据库连接失败');
+    ($db = New mysqli('localhost', 'msgboard', 'root', 'msgBoard')) or die('数据库连接失败');
     $db -> query("SET NAMES UTF-8");
     $db -> query("set character set 'utf8'");
     $userid = $_COOKIE['saveuser'];

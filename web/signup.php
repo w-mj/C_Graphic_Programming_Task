@@ -34,7 +34,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     else if ($setr == '')
         echo "<div class='text'> 重复密码不能为空</div>";
     else {
-        ($db = New mysqli('localhost', 'root', 'root', 'msgBoard')) or die('打开数据库失败');
+        ($db = New mysqli('localhost', 'msgboard', 'root', 'msgBoard')) or die('打开数据库失败');
         $db -> query("SET NAMES UTF-8");
         $db -> query("set character set 'utf8'");
         $input_username = $db->real_escape_string($_POST['username']);

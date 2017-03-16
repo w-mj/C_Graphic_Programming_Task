@@ -9,7 +9,7 @@ echo '<body>';
 if(isset($_COOKIE['saveuser']) && (!isset($_SESSION['userid']) || $_SESSION['userid'] == ''))
     echo "<script>window.location.href='login.php'</script>";
 
-$sql_user = 'root';
+$sql_user = 'msgboard';
 $sql_password = 'root';
 $sql_server = 'localhost';
 $sql_database = 'msgBoard';
